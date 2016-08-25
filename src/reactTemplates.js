@@ -244,6 +244,15 @@ function generateProps(node, context) {
         } else if (key.indexOf('rt-') !== 0) {
             props[propKey] = convertText(node, context, val.trim());
         }
+
+        if (node.name === 'img' && propKey === 'src') {
+            let evaluated = props[propKey];
+            if (/^"\/?bhf-assets/.test(evaluated)){
+                evaluated = 'require(' + evaluated.replace(/^"\/?bhf-assets/, '"bhf-assets') + ')';
+            }
+            props[propKey] = evaluated;
+        }
+
     });
     _.assign(props, generateTemplateProps(node, context));
 

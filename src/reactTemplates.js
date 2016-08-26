@@ -246,10 +246,10 @@ function generateProps(node, context) {
         }
 
         // Only run this in the client.
-        if (typeof window !== 'undefined' && node.name === 'img' && propKey === 'src') {
+        if (node.name === 'img' && propKey === 'src') {
             let evaluated = props[propKey];
             if (/^"\/?bhf-assets/.test(evaluated)){
-                evaluated = 'require(' + evaluated.replace(/^"\/?bhf-assets/, '"bhf-assets') + ')';
+                evaluated = `( typeof window !== 'undefined' ? require(${evaluated.replace(/^"\/?bhf-assets/, '"bhf-assets')}) : ${evaluated})`;
             }
             props[propKey] = evaluated;
         }

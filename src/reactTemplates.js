@@ -245,7 +245,8 @@ function generateProps(node, context) {
             props[propKey] = convertText(node, context, val.trim());
         }
 
-        if (node.name === 'img' && propKey === 'src') {
+        // Only run this in the client.
+        if (typeof window !== 'undefined' && node.name === 'img' && propKey === 'src') {
             let evaluated = props[propKey];
             if (/^"\/?bhf-assets/.test(evaluated)){
                 evaluated = 'require(' + evaluated.replace(/^"\/?bhf-assets/, '"bhf-assets') + ')';

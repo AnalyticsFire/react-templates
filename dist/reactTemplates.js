@@ -243,12 +243,12 @@ function generateProps(node, context) {
             props[propKey] = convertText(node, context, val.trim());
         }
 
+        // There is no note as to why this would ever only be run on the client.
+        // What this change does do it break the only use case I care about. We
+        // cannot do client checks as the results of npm run build have
+        // templates expanded.
         if (node.name === 'img' && propKey === 'src') {
-            let evaluated = props[propKey];
-            if (/^"\/?bhf-assets/.test(evaluated)) {
-                evaluated = 'require(' + evaluated.replace(/^"\/?bhf-assets/, '"bhf-assets') + ')';
-            }
-            props[propKey] = evaluated;
+            props[propKey] = `require(${ props[propKey] })`;
         }
     });
     _.assign(props, generateTemplateProps(node, context));

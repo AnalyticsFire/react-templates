@@ -245,15 +245,17 @@ function generateProps(node, context) {
             props[propKey] = convertText(node, context, val.trim());
         }
 
-        // Only run this in the client.
+        // Note: The correct way to handle require being output in generated
+        // templates is to ensure the output is processed by webpack.
         if (node.name === 'img' && propKey === 'src') {
-            let evaluated = props[propKey];
-            if (/^"\/?bhf-assets/.test(evaluated)){
-                evaluated = `( typeof window !== 'undefined' ? require(${evaluated.replace(/^"\/?bhf-assets/, '"bhf-assets')}) : ${evaluated})`;
-            }
-            props[propKey] = evaluated;
+          let nv = val.trim();
+          // Remove any leading / so module aliases are easier, the
+          // code should probably be updated but this is currently easier.
+          if (nv[0] === '/') {
+            nv = nv.slice(1);
+          }
+          props[propKey] = `require('${nv}')`;
         }
-
     });
     _.assign(props, generateTemplateProps(node, context));
 

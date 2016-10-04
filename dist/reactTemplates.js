@@ -243,12 +243,16 @@ function generateProps(node, context) {
             props[propKey] = convertText(node, context, val.trim());
         }
 
-        // There is no note as to why this would ever only be run on the client.
-        // What this change does do it break the only use case I care about. We
-        // cannot do client checks as the results of npm run build have
-        // templates expanded.
+        // Note: The correct way to handle require being output in generated
+        // templates is to ensure the output is processed by webpack.
         if (node.name === 'img' && propKey === 'src') {
-            props[propKey] = `require(${ props[propKey] })`;
+            let nv = val.trim();
+            // Remove any leading / so module aliases are easier, the
+            // code should probably be updated but this is currently easier.
+            if (nv[0] === '/') {
+                nv = nv.slice(1);
+            }
+            props[propKey] = `require('${ nv }')`;
         }
     });
     _.assign(props, generateTemplateProps(node, context));
